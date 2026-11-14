@@ -1,0 +1,6 @@
+{
+  "name": "MURMUR",
+  "description": "Red social anónima de publicaciones, confesiones, encuestas y mensajería privada: Las historias que nadie se atreve a contar.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

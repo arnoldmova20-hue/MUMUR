@@ -1,0 +1,328 @@
+{
+  "entities": {
+    "UserPublicProfile": {
+      "title": "UserPublicProfile",
+      "description": "Public social profile of a MURMUR user without PII or links to anonymous posts.",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string" },
+        "username": { "type": "string" },
+        "displayName": { "type": "string" },
+        "bio": { "type": "string" },
+        "photoData": { "type": "string" },
+        "accountStatus": { "type": "string", "enum": ["active", "suspended"] },
+        "followersCount": { "type": "integer" },
+        "followingCount": { "type": "integer" },
+        "allowMessageRequests": { "type": "boolean" },
+        "isPrivateProfile": { "type": "boolean" },
+        "showIdentityInComments": { "type": "boolean" },
+        "createdAt": { "type": "string", "format": "date-time", "description": "Server timestamp" },
+        "updatedAt": { "type": "string", "format": "date-time", "description": "Server timestamp" }
+      },
+      "required": ["uid", "username", "displayName", "bio", "accountStatus", "followersCount", "followingCount", "allowMessageRequests", "isPrivateProfile", "showIdentityInComments", "createdAt", "updatedAt"]
+    },
+    "UserPrivateInfo": {
+      "title": "UserPrivateInfo",
+      "description": "Owner-only PII, age verification, terms consent, and notification preferences.",
+      "type": "object",
+      "properties": {
+        "email": { "type": "string" },
+        "ageConfirmed": { "type": "boolean" },
+        "birthYear": { "type": "integer" },
+        "acceptedTermsVersion": { "type": "string" },
+        "acceptedTermsAt": { "type": "string", "format": "date-time" },
+        "themeMode": { "type": "string", "enum": ["dark", "light"] },
+        "notifyFollowers": { "type": "boolean" },
+        "notifyReactions": { "type": "boolean" },
+        "notifyComments": { "type": "boolean" },
+        "notifyReplies": { "type": "boolean" },
+        "notifyMessages": { "type": "boolean" },
+        "notifySecurity": { "type": "boolean" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["ageConfirmed", "acceptedTermsVersion", "themeMode", "updatedAt"]
+    },
+    "UsernameReservation": {
+      "title": "UsernameReservation",
+      "description": "Unique lowercase username reservation index.",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["uid", "createdAt"]
+    },
+    "AnonymousPost": {
+      "title": "AnonymousPost",
+      "description": "Public anonymous post document. Never contains authorUid or author identity fields.",
+      "type": "object",
+      "properties": {
+        "text": { "type": "string" },
+        "mediaType": { "type": "string", "enum": ["none", "image", "video"] },
+        "mediaData": { "type": "string" },
+        "mediaDurationMs": { "type": "integer" },
+        "videoChunkCount": { "type": "integer" },
+        "pollId": { "type": "string" },
+        "reactionsCount": { "type": "integer" },
+        "likeCount": { "type": "integer" },
+        "funnyCount": { "type": "integer" },
+        "surprisedCount": { "type": "integer" },
+        "sadCount": { "type": "integer" },
+        "interestedCount": { "type": "integer" },
+        "loveCount": { "type": "integer" },
+        "commentsCount": { "type": "integer" },
+        "status": { "type": "string", "enum": ["active", "removed"] },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["text", "mediaType", "mediaDurationMs", "reactionsCount", "likeCount", "funnyCount", "surprisedCount", "sadCount", "interestedCount", "loveCount", "commentsCount", "status", "createdAt", "updatedAt"]
+    },
+    "PostAuthorRecord": {
+      "title": "PostAuthorRecord",
+      "description": "Private mapping from postId to authorUid readable only by the true author.",
+      "type": "object",
+      "properties": {
+        "postId": { "type": "string" },
+        "authorUid": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["postId", "authorUid", "createdAt"]
+    },
+    "PostReaction": {
+      "title": "PostReaction",
+      "description": "Single reaction per user per post.",
+      "type": "object",
+      "properties": {
+        "postId": { "type": "string" },
+        "userId": { "type": "string" },
+        "reactionType": { "type": "string", "enum": ["like", "funny", "surprised", "sad", "interested", "love"] },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["postId", "userId", "reactionType", "createdAt"]
+    },
+    "Comment": {
+      "title": "Comment",
+      "description": "Post comment or reply with configurable anonymity display.",
+      "type": "object",
+      "properties": {
+        "postId": { "type": "string" },
+        "authorUid": { "type": "string" },
+        "authorLabel": { "type": "string" },
+        "isAnonymous": { "type": "boolean" },
+        "text": { "type": "string" },
+        "parentCommentId": { "type": "string" },
+        "status": { "type": "string", "enum": ["active", "deleted"] },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["postId", "authorUid", "authorLabel", "isAnonymous", "text", "status", "createdAt", "updatedAt"]
+    },
+    "Poll": {
+      "title": "Poll",
+      "description": "Poll attached to an anonymous post with 2 to 4 options.",
+      "type": "object",
+      "properties": {
+        "postId": { "type": "string" },
+        "question": { "type": "string" },
+        "options": { "type": "array" },
+        "c0": { "type": "integer" },
+        "c1": { "type": "integer" },
+        "c2": { "type": "integer" },
+        "c3": { "type": "integer" },
+        "totalVotes": { "type": "integer" },
+        "expiresAt": { "type": "string", "format": "date-time" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["postId", "question", "options", "c0", "c1", "c2", "c3", "totalVotes", "createdAt"]
+    },
+    "PollVote": {
+      "title": "PollVote",
+      "description": "Immutable single vote per user per poll.",
+      "type": "object",
+      "properties": {
+        "pollId": { "type": "string" },
+        "userId": { "type": "string" },
+        "optionIndex": { "type": "integer" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["pollId", "userId", "optionIndex", "createdAt"]
+    },
+    "FollowRelationship": {
+      "title": "FollowRelationship",
+      "description": "Directed follow relationship between users.",
+      "type": "object",
+      "properties": {
+        "followerUid": { "type": "string" },
+        "followingUid": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["followerUid", "followingUid", "createdAt"]
+    },
+    "BlockRelationship": {
+      "title": "BlockRelationship",
+      "description": "User block record preventing DMs and follows.",
+      "type": "object",
+      "properties": {
+        "blockerUid": { "type": "string" },
+        "blockedUid": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["blockerUid", "blockedUid", "createdAt"]
+    },
+    "Conversation": {
+      "title": "Conversation",
+      "description": "Private 1-on-1 conversation metadata.",
+      "type": "object",
+      "properties": {
+        "participantUids": { "type": "array" },
+        "lastMessageText": { "type": "string" },
+        "lastMessageSenderUid": { "type": "string" },
+        "isRequest": { "type": "boolean" },
+        "requestAccepted": { "type": "boolean" },
+        "unreadMap": { "type": "object" },
+        "hiddenForUids": { "type": "array" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["participantUids", "lastMessageText", "lastMessageSenderUid", "isRequest", "requestAccepted", "unreadMap", "hiddenForUids", "updatedAt"]
+    },
+    "DirectMessage": {
+      "title": "DirectMessage",
+      "description": "Private message inside a conversation.",
+      "type": "object",
+      "properties": {
+        "conversationId": { "type": "string" },
+        "participantUids": { "type": "array" },
+        "senderUid": { "type": "string" },
+        "text": { "type": "string" },
+        "mediaData": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "readAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["conversationId", "participantUids", "senderUid", "text", "createdAt"]
+    },
+    "SavedPost": {
+      "title": "SavedPost",
+      "description": "Private bookmark of an anonymous post.",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string" },
+        "postId": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["userId", "postId", "createdAt"]
+    },
+    "NotificationItem": {
+      "title": "NotificationItem",
+      "description": "In-app notification entry for a recipient user.",
+      "type": "object",
+      "properties": {
+        "recipientUid": { "type": "string" },
+        "actorUid": { "type": "string" },
+        "actorLabel": { "type": "string" },
+        "type": { "type": "string", "enum": ["follower", "reaction", "comment", "reply", "message", "security"] },
+        "referenceId": { "type": "string" },
+        "previewText": { "type": "string" },
+        "read": { "type": "boolean" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["recipientUid", "actorUid", "actorLabel", "type", "referenceId", "previewText", "read", "createdAt"]
+    },
+    "ContentReport": {
+      "title": "ContentReport",
+      "description": "Safety report submitted by a user.",
+      "type": "object",
+      "properties": {
+        "reporterUid": { "type": "string" },
+        "contentType": { "type": "string", "enum": ["post", "comment", "user", "message"] },
+        "contentId": { "type": "string" },
+        "reason": { "type": "string" },
+        "details": { "type": "string" },
+        "status": { "type": "string", "enum": ["pending", "reviewed"] },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["reporterUid", "contentType", "contentId", "reason", "details", "status", "createdAt"]
+    },
+    "VideoChunk": {
+      "title": "VideoChunk",
+      "description": "Base64-encoded MP4 video chunk stored under a post for cross-user playback.",
+      "type": "object",
+      "properties": {
+        "postId": { "type": "string" },
+        "chunkIndex": { "type": "integer" },
+        "data": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["postId", "chunkIndex", "data", "createdAt"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": { "$ref": "#/entities/UserPublicProfile" },
+      "description": "Public profile records without PII or post authorship"
+    },
+    "/users/{userId}/private/{docId}": {
+      "schema": { "$ref": "#/entities/UserPrivateInfo" },
+      "description": "Owner-only PII and preferences"
+    },
+    "/users/{userId}/savedPosts/{postId}": {
+      "schema": { "$ref": "#/entities/SavedPost" },
+      "description": "Private saved posts"
+    },
+    "/users/{userId}/notifications/{notificationId}": {
+      "schema": { "$ref": "#/entities/NotificationItem" },
+      "description": "User notifications"
+    },
+    "/usernames/{username}": {
+      "schema": { "$ref": "#/entities/UsernameReservation" },
+      "description": "Unique username index"
+    },
+    "/posts/{postId}": {
+      "schema": { "$ref": "#/entities/AnonymousPost" },
+      "description": "Public anonymous posts without authorUid"
+    },
+    "/postAuthors/{postId}": {
+      "schema": { "$ref": "#/entities/PostAuthorRecord" },
+      "description": "Private author mapping accessible only by the author"
+    },
+    "/posts/{postId}/reactions/{userId}": {
+      "schema": { "$ref": "#/entities/PostReaction" },
+      "description": "Per-user post reaction"
+    },
+    "/posts/{postId}/comments/{commentId}": {
+      "schema": { "$ref": "#/entities/Comment" },
+      "description": "Post comments and replies"
+    },
+    "/posts/{postId}/videoChunks/{chunkIndex}": {
+      "schema": { "$ref": "#/entities/VideoChunk" },
+      "description": "Chunked video binary segments for inline post playback"
+    },
+    "/polls/{pollId}": {
+      "schema": { "$ref": "#/entities/Poll" },
+      "description": "Post polls"
+    },
+    "/polls/{pollId}/votes/{userId}": {
+      "schema": { "$ref": "#/entities/PollVote" },
+      "description": "Single immutable vote per user"
+    },
+    "/followers/{relationshipId}": {
+      "schema": { "$ref": "#/entities/FollowRelationship" },
+      "description": "Follow relationships"
+    },
+    "/blocks/{blockId}": {
+      "schema": { "$ref": "#/entities/BlockRelationship" },
+      "description": "Block relationships"
+    },
+    "/conversations/{conversationId}": {
+      "schema": { "$ref": "#/entities/Conversation" },
+      "description": "Private conversation threads"
+    },
+    "/conversations/{conversationId}/messages/{messageId}": {
+      "schema": { "$ref": "#/entities/DirectMessage" },
+      "description": "Private messages"
+    },
+    "/reports/{reportId}": {
+      "schema": { "$ref": "#/entities/ContentReport" },
+      "description": "Safety and abuse reports"
+    }
+  }
+}

@@ -1,0 +1,41 @@
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isValidMediaContentType() {
+      return request.resource.contentType.matches('image/(jpeg|png|webp)') ||
+             request.resource.contentType.matches('video/(mp4|webm|quicktime)');
+    }
+
+    // Public anonymous post media (path uses opaque postId, never authorUid)
+    match /posts/{postId}/{fileName} {
+      allow read: if isSignedIn();
+      allow write: if isSignedIn() &&
+                      isValidMediaContentType() &&
+                      request.resource.size <= 15 * 1024 * 1024;
+      allow delete: if isSignedIn();
+    }
+
+    // Profile avatars
+    match /avatars/{userId}/{fileName} {
+      allow read: if isSignedIn();
+      allow write: if isSignedIn() &&
+                      request.auth.uid == userId &&
+                      request.resource.contentType.matches('image/(jpeg|png|webp)') &&
+                      request.resource.size <= 3 * 1024 * 1024;
+      allow delete: if isSignedIn() && request.auth.uid == userId;
+    }
+
+    // Private DM media
+    match /conversations/{conversationId}/{fileName} {
+      allow read: if isSignedIn();
+      allow write: if isSignedIn() &&
+                      request.resource.contentType.matches('image/(jpeg|png|webp)') &&
+                      request.resource.size <= 5 * 1024 * 1024;
+      allow delete: if isSignedIn();
+    }
+  }
+}
